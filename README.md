@@ -1,0 +1,1 @@
+# smart_property_finder_separated

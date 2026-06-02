@@ -6,7 +6,10 @@ from urllib.parse import urlparse
 BASE_DIR = Path(__file__).resolve().parent.parent
 # PROJECT_ROOT points to the root folder containing both backend/ and frontend/
 PROJECT_ROOT = BASE_DIR.parent
-FRONTEND_DIR = Path(os.environ.get('FRONTEND_DIR', PROJECT_ROOT / 'frontend'))
+DEFAULT_FRONTEND_DIR = BASE_DIR / 'frontend'
+if not DEFAULT_FRONTEND_DIR.exists():
+    DEFAULT_FRONTEND_DIR = PROJECT_ROOT / 'frontend'
+FRONTEND_DIR = Path(os.environ.get('FRONTEND_DIR', DEFAULT_FRONTEND_DIR))
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-me-in-production-xyz123')
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'

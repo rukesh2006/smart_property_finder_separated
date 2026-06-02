@@ -13,4 +13,4 @@ COPY . .
 RUN python manage.py collectstatic --noinput
 
 EXPOSE 10000
-CMD ["gunicorn", "smart_property_finder.wsgi:application", "--bind", "0.0.0.0:10000"]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn smart_property_finder.wsgi:application --bind 0.0.0.0:${PORT:-10000}"]

@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from urllib.parse import urlparse
 
 # BASE_DIR points to backend/ folder
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -7,9 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_ROOT = BASE_DIR.parent
 FRONTEND_DIR = Path(os.environ.get('FRONTEND_DIR', PROJECT_ROOT / 'frontend'))
 
-SECRET_KEY = 'django-insecure-change-me-in-production-xyz123'
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-me-in-production-xyz123')
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -56,7 +57,21 @@ TEMPLATES = [{
 
 WSGI_APPLICATION = 'smart_property_finder.wsgi.application'
 
-if os.environ.get('DB_ENGINE') == 'postgres':
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    database_url = urlparse(DATABASE_URL)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': database_url.path.lstrip('/'),
+            'USER': database_url.username,
+            'PASSWORD': database_url.password,
+            'HOST': database_url.hostname,
+            'PORT': database_url.port or '5432',
+        }
+    }
+elif os.environ.get('DB_ENGINE') == 'postgres':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
